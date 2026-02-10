@@ -642,6 +642,15 @@ void tsm_vte_get_def_attr(struct tsm_vte *vte, struct tsm_screen_attr *out)
 	memcpy(out, &vte->def_attr, sizeof(*out));
 }
 
+static void tsm_vte_set_def_attr(struct tsm_vte *vte, struct tsm_screen_attr *attr)
+{
+	if (!vte || !attr)
+		return;
+
+	memcpy(&vte->def_attr, attr, sizeof(*attr));
+	memcpy(&vte->cattr, attr, sizeof(*attr));
+}
+
 SHL_EXPORT
 unsigned int tsm_vte_get_flags(struct tsm_vte *vte)
 {
@@ -1698,6 +1707,7 @@ static void csi_mode(struct tsm_vte *vte, bool set)
 			else
 				tsm_screen_reset_flags(vte->con,
 						       TSM_SCREEN_ALTERNATE);
+			tsm_vte_set_def_attr(vte, &vte->con->def_attr);
 			continue;
 		case 1047: /* Alternate screen buffer with post-erase */
 			if (vte->flags & TSM_VTE_FLAG_TITE_INHIBIT_MODE)
@@ -1711,6 +1721,7 @@ static void csi_mode(struct tsm_vte *vte, bool set)
 				tsm_screen_reset_flags(vte->con,
 						       TSM_SCREEN_ALTERNATE);
 			}
+			tsm_vte_set_def_attr(vte, &vte->con->def_attr);
 			continue;
 		case 1048: /* Set/Reset alternate-screen buffer cursor */
 			if (vte->flags & TSM_VTE_FLAG_TITE_INHIBIT_MODE)
@@ -1744,6 +1755,7 @@ static void csi_mode(struct tsm_vte *vte, bool set)
 				tsm_screen_move_to(vte->con, vte->alt_cursor_x,
 						   vte->alt_cursor_y);
 			}
+			tsm_vte_set_def_attr(vte, &vte->con->def_attr);
 			continue;
 		case TSM_VTE_MOUSE_EVENT_BTN:
 		case TSM_VTE_MOUSE_EVENT_ANY:

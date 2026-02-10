@@ -1096,6 +1096,8 @@ void tsm_screen_reset_flags(struct tsm_screen *con, unsigned int flags)
 	if ((old & TSM_SCREEN_ALTERNATE) && (flags & TSM_SCREEN_ALTERNATE)) {
 		con->age = con->age_cnt;
 		con->lines = con->main_lines;
+		/* restore attributes of main screen when we switch from alt screen */
+		memcpy(&con->def_attr, &con->def_attr_main, sizeof(con->def_attr));
 	}
 
 	if ((old & TSM_SCREEN_HIDE_CURSOR) &&
